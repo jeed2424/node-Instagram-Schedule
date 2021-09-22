@@ -1,0 +1,661 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2580
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\froman\fcharset0 Times-Roman;}
+{\colortbl;\red255\green255\blue255;\red15\green112\blue1;\red255\green255\blue254;\red0\green0\blue0;
+\red0\green0\blue255;\red144\green1\blue18;\red14\green110\blue109;\red19\green119\blue72;}
+{\*\expandedcolortbl;;\cssrgb\c0\c50196\c0;\cssrgb\c100000\c100000\c99608;\cssrgb\c0\c0\c0;
+\cssrgb\c0\c0\c100000;\cssrgb\c63922\c8235\c8235;\cssrgb\c0\c50196\c50196;\cssrgb\c3529\c52941\c35294;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f0\fs24 \cf2 \cb3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 /* eslint-disable max-len */\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2 /* eslint-disable */\cf4 \cb1 \strokec4 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf5 \cb3 \strokec5 const\cf4 \strokec4  functions = require(\cf6 \strokec6 "firebase-functions"\cf4 \strokec4 );\cb1 \
+\cf5 \cb3 \strokec5 const\cf4 \strokec4  admin = require(\cf6 \strokec6 "firebase-admin"\cf4 \strokec4 );\cb1 \
+\cf5 \cb3 \strokec5 const\cf4 \strokec4  express = require(\cf6 \strokec6 "express"\cf4 \strokec4 );\cb1 \
+\cf5 \cb3 \strokec5 const\cf4 \strokec4  bodyParser = require(\cf6 \strokec6 "body-parser"\cf4 \strokec4 );\cb1 \
+\cf5 \cb3 \strokec5 const\cf4 \strokec4  axios = require(\cf6 \strokec6 "axios"\cf4 \strokec4 );\cb1 \
+\cf5 \cb3 \strokec5 const\cf4 \strokec4  \cf7 \strokec7 FACEBOOK_GRAPH_API_VERSION\cf4 \strokec4  = \cf6 \strokec6 "v11.0"\cf4 \strokec4 ;\cb1 \
+\cf5 \cb3 \strokec5 const\cf4 \strokec4  \cf7 \strokec7 FACEBOOK_APP_ID\cf4 \strokec4  = \cf6 \strokec6 _Removed_\cf4 \strokec4 ;\cb1 \
+\cf5 \cb3 \strokec5 const\cf4 \strokec4  \cf7 \strokec7 FACEBOOK_APP_SECRET\cf4 \strokec4  = \cf6 \strokec6 _Removed_\cf4 \strokec4 ;\cb1 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \cb3 \strokec2 // // Create and Deploy Your First Cloud Functions\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2 // // https://firebase.google.com/docs/functions/write-firebase-functions\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2 //\cf4 \cb1 \strokec4 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf4 \cb3 admin.initializeApp();\cb1 \
+\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf5 \cb3 \strokec5 const\cf4 \strokec4  app = express();\cb1 \
+\cf5 \cb3 \strokec5 const\cf4 \strokec4  main = express();\cb1 \
+\cf5 \cb3 \strokec5 const\cf4 \strokec4  db = admin.firestore();\cb1 \
+\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \cb3 \strokec2 /**\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * publish Instagram Media Object.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @param \{string\} container_id instagram media object creation id.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @param \{string\} accessToken user access token.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @return \{Promise\} Returns container status\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  */\cf4 \cb1 \strokec4 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf5 \cb3 \strokec5 async\cf4 \strokec4  \cf5 \strokec5 function\cf4 \strokec4  getContainerStatus(container_id, accessToken) \{\cb1 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf4 \cb3   \cf5 \strokec5 let\cf4 \strokec4  status = \cf6 \strokec6 "IN PROGRESS"\cf4 \strokec4 ;\cb1 \
+\cb3   \cf5 \strokec5 let\cf4 \strokec4  response;\cb1 \
+\cb3   \cf5 \strokec5 try\cf4 \strokec4  \{\cb1 \
+\cb3     response = \cf5 \strokec5 await\cf4 \strokec4  axios.\cf5 \strokec5 get\cf4 \strokec4 (\cb1 \
+\cb3       \cf6 \strokec6 `https://graph.facebook.com/\cf4 \strokec4 $\{\cf7 \strokec7 FACEBOOK_GRAPH_API_VERSION\cf4 \strokec4 \}\cf6 \strokec6 /\cf4 \strokec4 $\{container_id\}\cf6 \strokec6 `\cf4 \strokec4 ,\cb1 \
+\cb3       \{\cb1 \
+\cb3         params: \{\cb1 \
+\cb3           access_token: accessToken,\cb1 \
+\cb3           fields: \cf6 \strokec6 "status_code"\cf4 \strokec4 ,\cb1 \
+\cb3         \},\cb1 \
+\cb3       \}\cb1 \
+\cb3     );\cb1 \
+\cb3   \} \cf5 \strokec5 catch\cf4 \strokec4  (error) \{\cb1 \
+\cb3     console.log(error);\cb1 \
+\cb3     \cf5 \strokec5 return\cf4 \strokec4  \cf6 \strokec6 "ERROR"\cf4 \strokec4 ;\cb1 \
+\cb3   \}\cb1 \
+\cb3   \cf2 \strokec2 // console.log(response.data.status_code, "status");\cf4 \cb1 \strokec4 \
+\cb3   status = response.data.status_code;\cb1 \
+\cb3   \cf5 \strokec5 return\cf4 \strokec4  status;\cb1 \
+\cb3 \}\cb1 \
+\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \cb3 \strokec2 /**\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * Get LongLive Token Expire in 60 days.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @param \{string\} accessToken user access token.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @return \{Promise\} Return Long Live token.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  */\cf4 \cb1 \strokec4 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf5 \cb3 \strokec5 function\cf4 \strokec4  getLongLiveToken(accessToken) \{\cb1 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf4 \cb3   \cf5 \strokec5 return\cf4 \strokec4  \cf5 \strokec5 new\cf4 \strokec4  \cf7 \strokec7 Promise\cf4 \strokec4 ((resolve, reject) => \{\cb1 \
+\cb3     axios\cb1 \
+\cb3       .\cf5 \strokec5 get\cf4 \strokec4 (\cb1 \
+\cb3         \cf6 \strokec6 `https://graph.facebook.com/\cf4 \strokec4 $\{\cf7 \strokec7 FACEBOOK_GRAPH_API_VERSION\cf4 \strokec4 \}\cf6 \strokec6 /oauth/access_token`\cf4 \strokec4 ,\cb1 \
+\cb3         \{\cb1 \
+\cb3           params: \{\cb1 \
+\cb3             grant_type: \cf6 \strokec6 "fb_exchange_token"\cf4 \strokec4 ,\cb1 \
+\cb3             client_id: \cf7 \strokec7 FACEBOOK_APP_ID\cf4 \strokec4 ,\cb1 \
+\cb3             client_secret: \cf7 \strokec7 FACEBOOK_APP_SECRET\cf4 \strokec4 ,\cb1 \
+\cb3             fb_exchange_token: accessToken,\cb1 \
+\cb3           \},\cb1 \
+\cb3         \}\cb1 \
+\cb3       )\cb1 \
+\cb3       .then((response) => \{\cb1 \
+\cb3         resolve(response.data.access_token);\cb1 \
+\cb3       \})\cb1 \
+\cb3       .\cf5 \strokec5 catch\cf4 \strokec4 ((error) => \{\cb1 \
+\cb3         reject(error);\cb1 \
+\cb3       \});\cb1 \
+\cb3   \});\cb1 \
+\cb3 \}\cb1 \
+\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \cb3 \strokec2 /**\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * Get Facebook Pages.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @param \{string\} accessToken user access token.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @return \{Promise\} Returns the facebook pages result.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  */\cf4 \cb1 \strokec4 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf5 \cb3 \strokec5 function\cf4 \strokec4  getFacebookPages(accessToken) \{\cb1 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf4 \cb3   \cf5 \strokec5 return\cf4 \strokec4  \cf5 \strokec5 new\cf4 \strokec4  \cf7 \strokec7 Promise\cf4 \strokec4 ((resolve, reject) => \{\cb1 \
+\cb3     axios\cb1 \
+\cb3       .\cf5 \strokec5 get\cf4 \strokec4 (\cb1 \
+\cb3         \cf6 \strokec6 `https://graph.facebook.com/\cf4 \strokec4 $\{\cf7 \strokec7 FACEBOOK_GRAPH_API_VERSION\cf4 \strokec4 \}\cf6 \strokec6 /me/accounts`\cf4 \strokec4 ,\cb1 \
+\cb3         \{\cb1 \
+\cb3           params: \{\cb1 \
+\cb3             access_token: accessToken,\cb1 \
+\cb3           \},\cb1 \
+\cb3         \}\cb1 \
+\cb3       )\cb1 \
+\cb3       .then((response) => \{\cb1 \
+\cb3         \cf5 \strokec5 const\cf4 \strokec4  data = response.data.data;\cb1 \
+\cb3         resolve(data);\cb1 \
+\cb3       \})\cb1 \
+\cb3       .\cf5 \strokec5 catch\cf4 \strokec4 ((error) => \{\cb1 \
+\cb3         reject(error);\cb1 \
+\cb3       \});\cb1 \
+\cb3   \});\cb1 \
+\cb3 \}\cb1 \
+\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \cb3 \strokec2 /**\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * Get Instagram Account From Facebook Pages.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @param \{string\} accessToken user access token.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @param \{string\} pageId Page ID.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @return \{Promise\} Returns the Instagram Account Id.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  */\cf4 \cb1 \strokec4 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf5 \cb3 \strokec5 function\cf4 \strokec4  getInstagramAccountId(accessToken, pageId) \{\cb1 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf4 \cb3   \cf5 \strokec5 return\cf4 \strokec4  \cf5 \strokec5 new\cf4 \strokec4  \cf7 \strokec7 Promise\cf4 \strokec4 ((resolve, reject) => \{\cb1 \
+\cb3     axios\cb1 \
+\cb3       .\cf5 \strokec5 get\cf4 \strokec4 (\cb1 \
+\cb3         \cf6 \strokec6 `https://graph.facebook.com/\cf4 \strokec4 $\{\cf7 \strokec7 FACEBOOK_GRAPH_API_VERSION\cf4 \strokec4 \}\cf6 \strokec6 /\cf4 \strokec4 $\{pageId\}\cf6 \strokec6 `\cf4 \strokec4 ,\cb1 \
+\cb3         \{\cb1 \
+\cb3           params: \{\cb1 \
+\cb3             access_token: accessToken,\cb1 \
+\cb3             fields: \cf6 \strokec6 "instagram_business_account"\cf4 \strokec4 ,\cb1 \
+\cb3           \},\cb1 \
+\cb3         \}\cb1 \
+\cb3       )\cb1 \
+\cb3       .then((response) => \{\cb1 \
+\cb3         \cf5 \strokec5 if\cf4 \strokec4  (response.data.instagram_business_account) \{\cb1 \
+\cb3           resolve(\{\cb1 \
+\cb3             id: response.data.instagram_business_account.id,\cb1 \
+\cb3           \});\cb1 \
+\cb3         \} \cf5 \strokec5 else\cf4 \strokec4  \{\cb1 \
+\cb3           resolve(\{ error: \cf6 \strokec6 "No instagram Business Account"\cf4 \strokec4  \});\cb1 \
+\cb3         \}\cb1 \
+\cb3       \})\cb1 \
+\cb3       .\cf5 \strokec5 catch\cf4 \strokec4 ((error) => \{\cb1 \
+\cb3         reject(error);\cb1 \
+\cb3       \});\cb1 \
+\cb3   \});\cb1 \
+\cb3 \}\cb1 \
+\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \cb3 \strokec2 /**\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * Get Facebook Profile.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @param \{string\} accessToken user access token.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @return \{Promise\} Returns the Facebook Account Profile.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  */\cf4 \cb1 \strokec4 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf5 \cb3 \strokec5 function\cf4 \strokec4  getFacebookProfile(accessToken) \{\cb1 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf4 \cb3   \cf5 \strokec5 return\cf4 \strokec4  \cf5 \strokec5 new\cf4 \strokec4  \cf7 \strokec7 Promise\cf4 \strokec4 ((resolve, reject) => \{\cb1 \
+\cb3     axios\cb1 \
+\cb3       .\cf5 \strokec5 get\cf4 \strokec4 (\cf6 \strokec6 `https://graph.facebook.com/\cf4 \strokec4 $\{\cf7 \strokec7 FACEBOOK_GRAPH_API_VERSION\cf4 \strokec4 \}\cf6 \strokec6 /me`\cf4 \strokec4 , \{\cb1 \
+\cb3         params: \{\cb1 \
+\cb3           access_token: accessToken,\cb1 \
+\cb3           fields: \cf6 \strokec6 "name,picture,email"\cf4 \strokec4 ,\cb1 \
+\cb3         \},\cb1 \
+\cb3       \})\cb1 \
+\cb3       .then((response) => \{\cb1 \
+\cb3         resolve(\{\cb1 \
+\cb3           picture: response.data.picture.data.url,\cb1 \
+\cb3           name: response.data.name,\cb1 \
+\cb3           email: response.data.email,\cb1 \
+\cb3           facebookUserId: response.data.id,\cb1 \
+\cb3         \});\cb1 \
+\cb3       \})\cb1 \
+\cb3       .\cf5 \strokec5 catch\cf4 \strokec4 ((error) => \{\cb1 \
+\cb3         reject(error);\cb1 \
+\cb3       \});\cb1 \
+\cb3   \});\cb1 \
+\cb3 \}\cb1 \
+\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \cb3 \strokec2 /**\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * Get Instagram Profile.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @param \{string\} accessToken user access token.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @param \{string\} instagramAccountId Instagram Account ID.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @return \{Promise\} Returns the Instagram Account Profile.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  */\cf4 \cb1 \strokec4 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf5 \cb3 \strokec5 function\cf4 \strokec4  getInstagramProfile(accessToken, instagramAccountId) \{\cb1 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf4 \cb3   \cf5 \strokec5 return\cf4 \strokec4  \cf5 \strokec5 new\cf4 \strokec4  \cf7 \strokec7 Promise\cf4 \strokec4 ((resolve, reject) => \{\cb1 \
+\cb3     axios\cb1 \
+\cb3       .\cf5 \strokec5 get\cf4 \strokec4 (\cb1 \
+\cb3         \cf6 \strokec6 `https://graph.facebook.com/\cf4 \strokec4 $\{\cf7 \strokec7 FACEBOOK_GRAPH_API_VERSION\cf4 \strokec4 \}\cf6 \strokec6 /\cf4 \strokec4 $\{instagramAccountId\}\cf6 \strokec6 `\cf4 \strokec4 ,\cb1 \
+\cb3         \{\cb1 \
+\cb3           params: \{\cb1 \
+\cb3             access_token: accessToken,\cb1 \
+\cb3             fields: \cf6 \strokec6 "name,username,profile_picture_url"\cf4 \strokec4 ,\cb1 \
+\cb3           \},\cb1 \
+\cb3         \}\cb1 \
+\cb3       )\cb1 \
+\cb3       .then((response) => \{\cb1 \
+\cb3         resolve(response.data);\cb1 \
+\cb3       \})\cb1 \
+\cb3       .\cf5 \strokec5 catch\cf4 \strokec4 ((error) => \{\cb1 \
+\cb3         reject(error);\cb1 \
+\cb3       \});\cb1 \
+\cb3   \});\cb1 \
+\cb3 \}\cb1 \
+\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \cb3 \strokec2 /**\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * Create Instagram Media Object.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @param \{string\} accessToken user access token.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @param \{string\} instagramAcctId Instagram Account ID.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @param \{string\} caption caption.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @param \{string\} mediaType Instagram Account ID.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @param \{string\} mediaUrl media url\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @return \{Promise\} Returns created Instagram Media ID.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  */\cf4 \cb1 \strokec4 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf5 \cb3 \strokec5 function\cf4 \strokec4  createInstagramMedia(\cb1 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf4 \cb3   accessToken,\cb1 \
+\cb3   instagramAcctId,\cb1 \
+\cb3   caption,\cb1 \
+\cb3   mediaType,\cb1 \
+\cb3   mediaUrl,\cb1 \
+\cb3 ) \{\cb1 \
+\cb3   \cf5 \strokec5 return\cf4 \strokec4  \cf5 \strokec5 new\cf4 \strokec4  \cf7 \strokec7 Promise\cf4 \strokec4 ((resolve, reject) => \{\cb1 \
+\cb3     \cf5 \strokec5 const\cf4 \strokec4  params = \{\cb1 \
+\cb3       access_token: accessToken,\cb1 \
+\cb3       caption: caption,\cb1 \
+\cb3     \};\cb1 \
+\cb3     \cf5 \strokec5 if\cf4 \strokec4  (mediaType == \cf6 \strokec6 "PICTURE"\cf4 \strokec4 ) \{\cb1 \
+\cb3       params[\cf6 \strokec6 "image_url"\cf4 \strokec4 ] = mediaUrl;   \cb1 \
+\cb3      \cf2 \strokec2 // url = `https://graph.facebook.com/$\{FACEBOOK_GRAPH_API_VERSION\}/$\{instagramAcctId\}/media?media_type=$\{mediaType\}&image_url=$\{mediaUrl\}&caption=$\{caption\}`\cf4 \cb1 \strokec4 \
+\cb3     \} \cf5 \strokec5 else\cf4 \strokec4  \cf5 \strokec5 if\cf4 \strokec4  (mediaType == \cf6 \strokec6 "VIDEO"\cf4 \strokec4 ) \{\cb1 \
+\cb3       params[\cf6 \strokec6 "video_url"\cf4 \strokec4 ] = mediaUrl;\cb1 \
+\cb3       params[\cf6 \strokec6 "media_type"\cf4 \strokec4 ] = \cf6 \strokec6 "VIDEO"\cf4 \strokec4 ;\cb1 \
+\cb3       \cf2 \strokec2 //url = `https://graph.facebook.com/$\{FACEBOOK_GRAPH_API_VERSION\}/$\{instagramAcctId\}/media?media_type=$\{mediaType\}&video_url=$\{mediaUrl\}&caption=$\{caption\}`\cf4 \cb1 \strokec4 \
+\cb3     \} \cf5 \strokec5 else\cf4 \strokec4  \{\cb1 \
+\cb3       reject(\{ message: \cf6 \strokec6 "Unknow media!"\cf4 \strokec4  \});\cb1 \
+\cb3       \cf5 \strokec5 return\cf4 \strokec4 ;\cb1 \
+\cb3     \}\cb1 \
+\cb3     axios\cb1 \
+\cb3       .post(\cb1 \
+\cb3         \cf6 \strokec6 `https://graph.facebook.com/\cf4 \strokec4 $\{\cf7 \strokec7 FACEBOOK_GRAPH_API_VERSION\cf4 \strokec4 \}\cf6 \strokec6 /\cf4 \strokec4 $\{instagramAcctId\}\cf6 \strokec6 /media`\cf4 \strokec4 ,\cb1 \
+\cb3        params\cb1 \
+\cb3        \cf2 \strokec2 //`https://graph.facebook.com/$\{FACEBOOK_GRAPH_API_VERSION\}/$\{instagramAccountId\}/media?media_type=$\{mediaType\}&video_url=$\{mediaUrl\}&caption=$\{caption\}&access_token=$\{accessToken\}`\cf4 \cb1 \strokec4 \
+\cb3        \cf2 \strokec2 //url\cf4 \cb1 \strokec4 \
+\cb3       )\cb1 \
+\cb3       .then(\cf5 \strokec5 async\cf4 \strokec4  (response) => \{\cb1 \
+\cb3         \cf5 \strokec5 const\cf4 \strokec4  container_id = response.data.id;\cb1 \
+\cb3         \cf5 \strokec5 let\cf4 \strokec4  container_status = \cf6 \strokec6 "IN_PROGRESS"\cf4 \strokec4 ;\cb1 \
+\cb3         \cf5 \strokec5 while\cf4 \strokec4  (container_status == \cf6 \strokec6 "IN_PROGRESS"\cf4 \strokec4 ) \{\cb1 \
+\cb3           container_status = \cf5 \strokec5 await\cf4 \strokec4  getContainerStatus(\cb1 \
+\cb3             container_id,\cb1 \
+\cb3             accessToken\cb1 \
+\cb3           );\cb1 \
+\cb3           console.log(container_status, \cf6 \strokec6 "Container status"\cf4 \strokec4 );\cb1 \
+\cb3         \}\cb1 \
+\cb3         \cf2 \strokec2 // resolve(response.data);\cf4 \cb1 \strokec4 \
+\cb3         \cf5 \strokec5 if\cf4 \strokec4  (container_status == \cf6 \strokec6 "ERROR"\cf4 \strokec4 ) \{\cb1 \
+\cb3           reject(\{ error: \cf6 \strokec6 "Container error!"\cf4 \strokec4  \});\cb1 \
+\cb3         \} \cf5 \strokec5 else\cf4 \strokec4  \{\cb1 \
+\cb3           resolve(response.data);\cb1 \
+\cb3         \}\cb1 \
+\cb3       \})\cb1 \
+\cb3       .\cf5 \strokec5 catch\cf4 \strokec4 ((error) => \{\cb1 \
+\cb3         console.log(error);\cb1 \
+\cb3         reject(error);\cb1 \
+\cb3       \});\cb1 \
+\cb3   \});\cb1 \
+\cb3 \}\cb1 \
+\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \cb3 \strokec2 /**\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * publish Instagram Media Object.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @param \{string\} accessToken user access token.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @param \{string\} instagramAcctId instagram media object creation id.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @param \{string\} mediaObjectId instagram media object creation id.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * @return \{Promise\} Returns the Instagram Account Profile.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  */\cf4 \cb1 \strokec4 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf5 \cb3 \strokec5 function\cf4 \strokec4  publishMedia(accessToken, instagramAcctId, mediaObjectId) \{\cb1 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf4 \cb3   console.log(accessToken, \cf6 \strokec6 " --> "\cf4 \strokec4 , instagramAcctId, \cf6 \strokec6 " --> "\cf4 \strokec4 , mediaObjectId);\cb1 \
+\cb3   \cf5 \strokec5 return\cf4 \strokec4  \cf5 \strokec5 new\cf4 \strokec4  \cf7 \strokec7 Promise\cf4 \strokec4 ((resolve, reject) => \{\cb1 \
+\cb3     axios\cb1 \
+\cb3       .post(\cb1 \
+\cb3         \cf6 \strokec6 `https://graph.facebook.com/\cf4 \strokec4 $\{\cf7 \strokec7 FACEBOOK_GRAPH_API_VERSION\cf4 \strokec4 \}\cf6 \strokec6 /\cf4 \strokec4 $\{instagramAcctId\}\cf6 \strokec6 /media_publish`\cf4 \strokec4 ,\cb1 \
+\cb3         \{\cb1 \
+\cb3           access_token: accessToken,\cb1 \
+\cb3           creation_id: mediaObjectId,\cb1 \
+\cb3         \}\cb1 \
+\cb3         \cf2 \strokec2 //`https://graph.facebook.com/v5.0/$\{instagramAcctId\}/media_publish?creation_id=$\{mediaObjectId\}&access_token=$\{accessToken\}`\cf4 \cb1 \strokec4 \
+\cb3       )\cb1 \
+\cb3       .then((response) => \{\cb1 \
+\cb3         resolve(response.data);\cb1 \
+\cb3       \})\cb1 \
+\cb3       .\cf5 \strokec5 catch\cf4 \strokec4 ((error) => \{\cb1 \
+\cb3         console.log(error);\cb1 \
+\cb3         reject(error);\cb1 \
+\cb3       \});\cb1 \
+\cb3   \});\cb1 \
+\cb3 \}\cb1 \
+\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \cb3 \strokec2 /**\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * Facebook Login with uuid\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * body params \{uuid, accessToken\}\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  */\cf4 \cb1 \strokec4 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf4 \cb3 app.post(\cf6 \strokec6 "/register"\cf4 \strokec4 , \cf5 \strokec5 async\cf4 \strokec4  (req, res) => \{\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  uuid = req.body.uuid;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  accessToken = req.body.accessToken;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  instagramAccts = [];\cb1 \
+\cb3   \cf5 \strokec5 let\cf4 \strokec4  longLiveToken, userData, pages;\cb1 \
+\cb3   \cf5 \strokec5 try\cf4 \strokec4  \{\cb1 \
+\cb3     longLiveToken = \cf5 \strokec5 await\cf4 \strokec4  getLongLiveToken(accessToken);\cb1 \
+\cb3   \} \cf5 \strokec5 catch\cf4 \strokec4  (error) \{\cb1 \
+\cb3     console.log(error);\cb1 \
+\cb3     \cf5 \strokec5 return\cf4 \strokec4  res.status(\cf8 \strokec8 400\cf4 \strokec4 ).json(\{\cb1 \
+\cb3       error: \cf6 \strokec6 "Failed to create LongLive Token"\cf4 \strokec4 ,\cb1 \
+\cb3     \});\cb1 \
+\cb3   \}\cb1 \
+\
+\cb3   \cf5 \strokec5 try\cf4 \strokec4  \{\cb1 \
+\cb3     userData = \cf5 \strokec5 await\cf4 \strokec4  getFacebookProfile(accessToken);\cb1 \
+\cb3   \} \cf5 \strokec5 catch\cf4 \strokec4  (error) \{\cb1 \
+\cb3     console.log(error);\cb1 \
+\cb3     \cf5 \strokec5 return\cf4 \strokec4  res.status(\cf8 \strokec8 400\cf4 \strokec4 ).json(\{\cb1 \
+\cb3       error: \cf6 \strokec6 "Failed to get Facebook profile"\cf4 \strokec4 ,\cb1 \
+\cb3     \});\cb1 \
+\cb3   \}\cb1 \
+\
+\cb3   \cf5 \strokec5 try\cf4 \strokec4  \{\cb1 \
+\cb3     pages = \cf5 \strokec5 await\cf4 \strokec4  getFacebookPages(accessToken);\cb1 \
+\cb3   \} \cf5 \strokec5 catch\cf4 \strokec4  (error) \{\cb1 \
+\cb3     console.log(error);\cb1 \
+\cb3     \cf5 \strokec5 return\cf4 \strokec4  res.status(\cf8 \strokec8 400\cf4 \strokec4 ).json(\{\cb1 \
+\cb3       error: \cf6 \strokec6 "Failed to get Facebook pages"\cf4 \strokec4 ,\cb1 \
+\cb3     \});\cb1 \
+\cb3   \}\cb1 \
+\
+\cb3   \cf5 \strokec5 if\cf4 \strokec4  (pages.length > \cf8 \strokec8 0\cf4 \strokec4 ) \{\cb1 \
+\cb3     \cf5 \strokec5 for\cf4 \strokec4  (\cf5 \strokec5 let\cf4 \strokec4  i = \cf8 \strokec8 0\cf4 \strokec4 ; i < pages.length; i++) \{\cb1 \
+\cb3       \cf5 \strokec5 try\cf4 \strokec4  \{\cb1 \
+\cb3         \cf5 \strokec5 const\cf4 \strokec4  data = \cf5 \strokec5 await\cf4 \strokec4  getInstagramAccountId(accessToken, pages[i].id);\cb1 \
+\cb3         \cf5 \strokec5 if\cf4 \strokec4  (!data.error) \{\cb1 \
+\cb3           \cf5 \strokec5 const\cf4 \strokec4  igProfile = \cf5 \strokec5 await\cf4 \strokec4  getInstagramProfile(accessToken, data.id);\cb1 \
+\cb3           igProfile[\cf6 \strokec6 "isActive"\cf4 \strokec4 ] = \cf5 \strokec5 true\cf4 \strokec4 ;\cb1 \
+\cb3           \cf5 \strokec5 if\cf4 \strokec4  (i == \cf8 \strokec8 0\cf4 \strokec4 ) \{\cb1 \
+\cb3             igProfile[\cf6 \strokec6 "isPrimary"\cf4 \strokec4 ] = \cf5 \strokec5 true\cf4 \strokec4 ;\cb1 \
+\cb3           \} \cf5 \strokec5 else\cf4 \strokec4  \{\cb1 \
+\cb3             igProfile[\cf6 \strokec6 "isPrimary"\cf4 \strokec4 ] = \cf5 \strokec5 false\cf4 \strokec4 ;\cb1 \
+\cb3           \}\cb1 \
+\cb3           instagramAccts.push(igProfile);\cb1 \
+\cb3         \}\cb1 \
+\cb3       \} \cf5 \strokec5 catch\cf4 \strokec4  (error) \{\cb1 \
+\cb3         console.log(error);\cb1 \
+\cb3         \cf5 \strokec5 return\cf4 \strokec4  res.status(\cf8 \strokec8 400\cf4 \strokec4 ).json(\{\cb1 \
+\cb3           error: \cf6 \strokec6 "Failed to get Instagram accounts"\cf4 \strokec4 ,\cb1 \
+\cb3         \});\cb1 \
+\cb3       \}\cb1 \
+\cb3     \}\cb1 \
+\cb3   \}\cb1 \
+\
+\cb3   \cf5 \strokec5 try\cf4 \strokec4  \{\cb1 \
+\cb3     \cf5 \strokec5 await\cf4 \strokec4  db.collection(\cf6 \strokec6 "users"\cf4 \strokec4 ).doc(uuid).\cf5 \strokec5 set\cf4 \strokec4 (\{\cb1 \
+\cb3       longLiveToken: longLiveToken,\cb1 \
+\cb3       picture: userData.picture,\cb1 \
+\cb3       name: userData.name,\cb1 \
+\cb3       email: userData.email,\cb1 \
+\cb3       facebookUserId: userData.facebookUserId,\cb1 \
+\cb3       accessToken: accessToken,\cb1 \
+\cb3       uuid: uuid,\cb1 \
+\cb3       instagramAccts: instagramAccts,\cb1 \
+\cb3     \});\cb1 \
+\cb3   \} \cf5 \strokec5 catch\cf4 \strokec4  (error) \{\cb1 \
+\cb3     console.log(error);\cb1 \
+\cb3     \cf5 \strokec5 return\cf4 \strokec4  res.status(\cf8 \strokec8 400\cf4 \strokec4 ).json(\{\cb1 \
+\cb3       error: \cf6 \strokec6 "Failed to save user info to firestore"\cf4 \strokec4 ,\cb1 \
+\cb3     \});\cb1 \
+\cb3   \}\cb1 \
+\
+\cb3   \cf5 \strokec5 return\cf4 \strokec4  res.status(\cf8 \strokec8 200\cf4 \strokec4 ).json(\{\cb1 \
+\cb3     message: \cf6 \strokec6 "Success"\cf4 \strokec4 ,\cb1 \
+\cb3     instagramAccts: instagramAccts,\cb1 \
+\cb3   \});\cb1 \
+\cb3 \});\cb1 \
+\
+\cb3 app.post(\cf6 \strokec6 "/getInstagramAccounts"\cf4 \strokec4 , \cf5 \strokec5 async\cf4 \strokec4  (req, res) => \{\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  uuid = req.body.uuid;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  user = \cf5 \strokec5 await\cf4 \strokec4  db.collection(\cf6 \strokec6 "users"\cf4 \strokec4 ).doc(uuid).\cf5 \strokec5 get\cf4 \strokec4 ();\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  userData = user.data();\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  accessToken = userData.longLiveToken;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  instagramAccts = [];\cb1 \
+\cb3   \cf5 \strokec5 let\cf4 \strokec4  pages;\cb1 \
+\
+\cb3   \cf5 \strokec5 try\cf4 \strokec4  \{\cb1 \
+\cb3     pages = \cf5 \strokec5 await\cf4 \strokec4  getFacebookPages(accessToken);\cb1 \
+\cb3   \} \cf5 \strokec5 catch\cf4 \strokec4  (error) \{\cb1 \
+\cb3     console.log(error);\cb1 \
+\cb3     \cf5 \strokec5 return\cf4 \strokec4  res.status(\cf8 \strokec8 400\cf4 \strokec4 ).json(\{\cb1 \
+\cb3       error: \cf6 \strokec6 "Failed to get Facebook pages"\cf4 \strokec4 ,\cb1 \
+\cb3     \});\cb1 \
+\cb3   \}\cb1 \
+\
+\cb3   \cf5 \strokec5 if\cf4 \strokec4  (pages.length > \cf8 \strokec8 0\cf4 \strokec4 ) \{\cb1 \
+\cb3     \cf5 \strokec5 for\cf4 \strokec4  (\cf5 \strokec5 let\cf4 \strokec4  i = \cf8 \strokec8 0\cf4 \strokec4 ; i < pages.length; i++) \{\cb1 \
+\cb3       \cf5 \strokec5 try\cf4 \strokec4  \{\cb1 \
+\cb3         \cf5 \strokec5 const\cf4 \strokec4  data = \cf5 \strokec5 await\cf4 \strokec4  getInstagramAccountId(accessToken, pages[i].id);\cb1 \
+\cb3         \cf5 \strokec5 if\cf4 \strokec4  (!data.error) \{\cb1 \
+\cb3           \cf5 \strokec5 const\cf4 \strokec4  igProfile = \cf5 \strokec5 await\cf4 \strokec4  getInstagramProfile(accessToken, data.id);\cb1 \
+\cb3           \cf5 \strokec5 if\cf4 \strokec4  (i == \cf8 \strokec8 0\cf4 \strokec4 ) \{\cb1 \
+\cb3             igProfile[\cf6 \strokec6 "isActive"\cf4 \strokec4 ] = \cf5 \strokec5 true\cf4 \strokec4 ;\cb1 \
+\cb3           \} \cf5 \strokec5 else\cf4 \strokec4  \{\cb1 \
+\cb3             igProfile[\cf6 \strokec6 "isActive"\cf4 \strokec4 ] = \cf5 \strokec5 false\cf4 \strokec4 ;\cb1 \
+\cb3           \}\cb1 \
+\cb3           instagramAccts.push(igProfile);\cb1 \
+\cb3         \}\cb1 \
+\cb3       \} \cf5 \strokec5 catch\cf4 \strokec4  (error) \{\cb1 \
+\cb3         console.log(error);\cb1 \
+\cb3         \cf5 \strokec5 return\cf4 \strokec4  res.status(\cf8 \strokec8 400\cf4 \strokec4 ).json(\{\cb1 \
+\cb3           error: \cf6 \strokec6 "Failed to get Instagram accounts"\cf4 \strokec4 ,\cb1 \
+\cb3         \});\cb1 \
+\cb3       \}\cb1 \
+\cb3     \}\cb1 \
+\cb3   \}\cb1 \
+\cb3   \cf5 \strokec5 try\cf4 \strokec4  \{\cb1 \
+\cb3     \cf5 \strokec5 await\cf4 \strokec4  db\cb1 \
+\cb3       .collection(\cf6 \strokec6 "users"\cf4 \strokec4 )\cb1 \
+\cb3       .doc(uuid)\cb1 \
+\cb3       .update(\{ instagramAccts: instagramAccts \});\cb1 \
+\cb3   \} \cf5 \strokec5 catch\cf4 \strokec4  (error) \{\cb1 \
+\cb3     console.log(error);\cb1 \
+\cb3     \cf5 \strokec5 return\cf4 \strokec4  res.status(\cf8 \strokec8 500\cf4 \strokec4 ).json(\{\cb1 \
+\cb3       error: \cf6 \strokec6 "Failed to update instagram accounts"\cf4 \strokec4 ,\cb1 \
+\cb3     \});\cb1 \
+\cb3   \}\cb1 \
+\cb3   \cf5 \strokec5 return\cf4 \strokec4  res.status(\cf8 \strokec8 200\cf4 \strokec4 ).json(\{ instagramAccts: instagramAccts \});\cb1 \
+\cb3 \});\cb1 \
+\
+\pard\pardeftab720\sl360\partightenfactor0
+\cf2 \cb3 \strokec2 /**\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * Schedule Instagram Media Object to publish.\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  * body params \{time, mediaType, uuid, media, instagramAcctId\}\cf4 \cb1 \strokec4 \
+\cf2 \cb3 \strokec2  */\cf4 \cb1 \strokec4 \
+\pard\pardeftab720\sl360\partightenfactor0
+\cf4 \cb3 app.post(\cf6 \strokec6 "/schedule"\cf4 \strokec4 , \cf5 \strokec5 async\cf4 \strokec4  (req, res) => \{\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  uuid = req.body.uuid;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  time = req.body.time;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  mediaType = req.body.mediaType;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  media = req.body.media; \cf2 \strokec2 // url string array\cf4 \cb1 \strokec4 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  longitude = req.body.longitude;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  latitude = req.body.latitude;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  instagramAcctId = req.body.instagramAcctId;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  caption = req.body.caption;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  thumbnail = req.body.thumbnail;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  timeStamp = req.body.timeStamp;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  notificationIdentifier = req.body.notificationIdentifier;\cb1 \
+\
+\cb3   \cf5 \strokec5 try\cf4 \strokec4  \{\cb1 \
+\cb3     \cf5 \strokec5 const\cf4 \strokec4  postData = \cf5 \strokec5 await\cf4 \strokec4  db.collection(\cf6 \strokec6 "posts"\cf4 \strokec4 ).add(\{\cb1 \
+\cb3       uuid: uuid,\cb1 \
+\cb3       time: time,\cb1 \
+\cb3       mediaType: mediaType,\cb1 \
+\cb3       media: media,\cb1 \
+\cb3       instagramAcctId: instagramAcctId,\cb1 \
+\cb3       published: \cf5 \strokec5 false\cf4 \strokec4 ,\cb1 \
+\cb3       caption: caption,\cb1 \
+\cb3       thumbnail: thumbnail ? thumbnail : \cf5 \strokec5 null\cf4 \strokec4 ,\cb1 \
+\cb3       longitude: longitude,\cb1 \
+\cb3       latitude: latitude,\cb1 \
+\cb3       timeStamp: timeStamp,\cb1 \
+\cb3       notificationIdentifier: notificationIdentifier ? notificationIdentifier : \cf5 \strokec5 null\cf4 \strokec4 ,\cb1 \
+\
+\cb3     \});\cb1 \
+\cb3     \cf5 \strokec5 const\cf4 \strokec4  ref = \cf5 \strokec5 await\cf4 \strokec4  postData.\cf5 \strokec5 get\cf4 \strokec4 ();\cb1 \
+\cb3     \cf5 \strokec5 await\cf4 \strokec4  db.collection(\cf6 \strokec6 "posts"\cf4 \strokec4 ).doc(ref.id).update(\{ id: ref.id \});\cb1 \
+\cb3     res.status(\cf8 \strokec8 200\cf4 \strokec4 ).json(\{\cb1 \
+\cb3       message: \cf6 \strokec6 "Success!"\cf4 \strokec4 ,\cb1 \
+\cb3     \});\cb1 \
+\cb3   \} \cf5 \strokec5 catch\cf4 \strokec4  (error) \{\cb1 \
+\cb3     console.log(error);\cb1 \
+\cb3     res.status(\cf8 \strokec8 500\cf4 \strokec4 ).json(error.message);\cb1 \
+\cb3   \}\cb1 \
+\cb3 \});\cb1 \
+\
+\cb3 app.post(\cf6 \strokec6 "/update-schedule"\cf4 \strokec4 , \cf5 \strokec5 async\cf4 \strokec4  (req, res) => \{\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  id = req.body.id;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  time = req.body.time;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  longitude = req.body.longitude;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  latitude = req.body.latitude;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  instagramAcctId = req.body.instagramAcctId;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  caption = req.body.caption;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  timeStamp = req.body.timeStamp;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  notificationIdentifier  = req.body.notificationIdentifier;\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  updateData = \{\};\cb1 \
+\cb3   \cf5 \strokec5 if\cf4 \strokec4  (time) \{\cb1 \
+\cb3     updateData[\cf6 \strokec6 "time"\cf4 \strokec4 ] = time;\cb1 \
+\cb3   \}\cb1 \
+\cb3   \cf5 \strokec5 if\cf4 \strokec4  (longitude) \{\cb1 \
+\cb3     updateData[\cf6 \strokec6 "longitude"\cf4 \strokec4 ] = longitude;\cb1 \
+\cb3   \}\cb1 \
+\cb3   \cf5 \strokec5 if\cf4 \strokec4  (latitude) \{\cb1 \
+\cb3     updateData[\cf6 \strokec6 "latitude"\cf4 \strokec4 ] = latitude;\cb1 \
+\cb3   \}\cb1 \
+\cb3   \cf5 \strokec5 if\cf4 \strokec4  (instagramAcctId) \{\cb1 \
+\cb3     updateData[\cf6 \strokec6 "instagramAcctId"\cf4 \strokec4 ] = instagramAcctId;\cb1 \
+\cb3   \}\cb1 \
+\cb3   \cf5 \strokec5 if\cf4 \strokec4  (caption) \{\cb1 \
+\cb3     updateData[\cf6 \strokec6 "caption"\cf4 \strokec4 ] = caption;\cb1 \
+\cb3   \}\cb1 \
+\cb3   \cf5 \strokec5 if\cf4 \strokec4  (timeStamp) \{\cb1 \
+\cb3     updateData[\cf6 \strokec6 "timeStamp"\cf4 \strokec4 ] = timeStamp;\cb1 \
+\cb3   \}\cb1 \
+\cb3   \cf5 \strokec5 if\cf4 \strokec4  (notificationIdentifier) \{\cb1 \
+\cb3       updateData[\cf6 \strokec6 "notificationIdentifier"\cf4 \strokec4 ] = notificationIdentifier;\cb1 \
+\cb3   \}\cb1 \
+\
+\cb3   \cf5 \strokec5 try\cf4 \strokec4  \{\cb1 \
+\cb3     \cf5 \strokec5 await\cf4 \strokec4  db.collection(\cf6 \strokec6 "posts"\cf4 \strokec4 ).doc(id).update(updateData);\cb1 \
+\cb3     res.status(\cf8 \strokec8 200\cf4 \strokec4 ).json(\{\cb1 \
+\cb3       message: \cf6 \strokec6 "Update success!"\cf4 \strokec4 ,\cb1 \
+\cb3     \});\cb1 \
+\cb3   \} \cf5 \strokec5 catch\cf4 \strokec4  (error) \{\cb1 \
+\cb3     console.log(error);\cb1 \
+\cb3     res.status(\cf8 \strokec8 500\cf4 \strokec4 ).json(error.message);\cb1 \
+\cb3   \}\cb1 \
+\cb3 \});\cb1 \
+\
+\cb3 app.post(\cf6 \strokec6 "/remove-schedule"\cf4 \strokec4 , \cf5 \strokec5 async\cf4 \strokec4  (req, res) => \{\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  id = req.body.id;\cb1 \
+\
+\cb3   \cf5 \strokec5 try\cf4 \strokec4  \{\cb1 \
+\cb3     \cf5 \strokec5 const\cf4 \strokec4  postData = \cf5 \strokec5 await\cf4 \strokec4  db.collection(\cf6 \strokec6 "posts"\cf4 \strokec4 ).doc(id).\cf5 \strokec5 get\cf4 \strokec4 ();\cb1 \
+\cb3     \cf5 \strokec5 if\cf4 \strokec4  (postData.exists) \{\cb1 \
+\cb3       \cf5 \strokec5 await\cf4 \strokec4  db.collection(\cf6 \strokec6 "posts"\cf4 \strokec4 ).doc(id).\cf5 \strokec5 delete\cf4 \strokec4 ();\cb1 \
+\cb3       res.status(\cf8 \strokec8 200\cf4 \strokec4 ).json(\{\cb1 \
+\cb3         message: \cf6 \strokec6 "Remove success!"\cf4 \strokec4 ,\cb1 \
+\cb3       \});\cb1 \
+\cb3     \} \cf5 \strokec5 else\cf4 \strokec4  \{\cb1 \
+\cb3       res.status(\cf8 \strokec8 400\cf4 \strokec4 ).json(\{\cb1 \
+\cb3         message: \cf6 \strokec6 "There is no such post!"\cf4 \strokec4 ,\cb1 \
+\cb3       \});\cb1 \
+\cb3     \}\cb1 \
+\cb3   \} \cf5 \strokec5 catch\cf4 \strokec4  (error) \{\cb1 \
+\cb3     console.log(error);\cb1 \
+\cb3     res.status(\cf8 \strokec8 500\cf4 \strokec4 ).json(error.message);\cb1 \
+\cb3   \}\cb1 \
+\cb3 \});\cb1 \
+\
+\cb3 app.post(\cf6 \strokec6 "/get-posts-by-date"\cf4 \strokec4 , \cf5 \strokec5 async\cf4 \strokec4  (req, res) => \{\cb1 \
+\cb3   \cf5 \strokec5 const\cf4 \strokec4  uuid = req.body.uuid;\cb1 \
+\cb3   \cf5 \strokec5 let\cf4 \strokec4  posts_by_date = [];\cb1 \
+\cb3   \cf5 \strokec5 try\cf4 \strokec4  \{\cb1 \
+\cb3     \cf5 \strokec5 const\cf4 \strokec4  posts = \cf5 \strokec5 await\cf4 \strokec4  db\cb1 \
+\cb3       .collection(\cf6 \strokec6 "posts"\cf4 \strokec4 )\cb1 \
+\cb3       .where(\cf6 \strokec6 "published"\cf4 \strokec4 , \cf6 \strokec6 "=="\cf4 \strokec4 , \cf5 \strokec5 false\cf4 \strokec4 )\cb1 \
+\cb3       .where(\cf6 \strokec6 "uuid"\cf4 \strokec4 , \cf6 \strokec6 "=="\cf4 \strokec4 , uuid)\cb1 \
+\cb3       .orderBy(\cf6 \strokec6 "time"\cf4 \strokec4 )\cb1 \
+\cb3       .\cf5 \strokec5 get\cf4 \strokec4 ();\cb1 \
+\cb3     \cf5 \strokec5 for\cf4 \strokec4  (\cf5 \strokec5 let\cf4 \strokec4  i = \cf8 \strokec8 0\cf4 \strokec4 ; i < posts.docs.length; i++) \{\cb1 \
+\cb3       \cf5 \strokec5 const\cf4 \strokec4  postData = posts.docs[i].data();\cb1 \
+\cb3       console.log(\cf5 \strokec5 new\cf4 \strokec4  \cf7 \strokec7 Date\cf4 \strokec4 (postData[\cf6 \strokec6 "time"\cf4 \strokec4 ]).toLocaleDateString());\cb1 \
+\cb3       \cf5 \strokec5 const\cf4 \strokec4  localDate = \cf5 \strokec5 new\cf4 \strokec4  \cf7 \strokec7 Date\cf4 \strokec4 (postData[\cf6 \strokec6 "time"\cf4 \strokec4 ]).toLocaleDateString();\cb1 \
+\cb3       \cf5 \strokec5 if\cf4 \strokec4  (posts_by_date[localDate]) \{\cb1 \
+\cb3         posts_by_date[localDate].push(postData);\cb1 \
+\cb3       \} \cf5 \strokec5 else\cf4 \strokec4  \{\cb1 \
+\cb3         posts_by_date[localDate] = [];\cb1 \
+\cb3         posts_by_date[localDate].push(postData);\cb1 \
+\cb3       \}\cb1 \
+\cb3     \}\cb1 \
+\cb3     console.log(posts_by_date, \cf6 \strokec6 "posts by date"\cf4 \strokec4 );\cb1 \
+\cb3     \cf5 \strokec5 return\cf4 \strokec4  res.status(\cf8 \strokec8 200\cf4 \strokec4 ).json(\{\cb1 \
+\cb3       posts: posts_by_date,\cb1 \
+\cb3     \});\cb1 \
+\cb3   \} \cf5 \strokec5 catch\cf4 \strokec4  (error) \{\cb1 \
+\cb3     console.log(error);\cb1 \
+\cb3     \cf5 \strokec5 return\cf4 \strokec4  res.status(\cf8 \strokec8 500\cf4 \strokec4 ).json(error.message);\cb1 \
+\cb3   \}\cb1 \
+\cb3 \});\cb1 \
+\
+\cb3 exports.scheduledFunction = functions.pubsub\cb1 \
+\cb3   .schedule(\cf6 \strokec6 "* * * * *"\cf4 \strokec4 )\cb1 \
+\cb3   .onRun((context) => \{\cb1 \
+\cb3     console.log(\cf6 \strokec6 "This will be run every 1 minute!"\cf4 \strokec4 );\cb1 \
+\cb3     db.collection(\cf6 \strokec6 "posts"\cf4 \strokec4 )\cb1 \
+\cb3       .where(\cf6 \strokec6 "published"\cf4 \strokec4 , \cf6 \strokec6 "=="\cf4 \strokec4 , \cf5 \strokec5 false\cf4 \strokec4 )\cb1 \
+\cb3       .\cf5 \strokec5 get\cf4 \strokec4 ()\cb1 \
+\cb3       .then((querySnapshot) => \{\cb1 \
+\cb3         querySnapshot.forEach(\cf5 \strokec5 async\cf4 \strokec4  (doc) => \{\cb1 \
+\cb3           console.log(doc.id, \cf6 \strokec6 " => "\cf4 \strokec4 , doc.data());\cb1 \
+\cb3           \cf5 \strokec5 const\cf4 \strokec4  post = doc.data();\cb1 \
+\cb3           \cf5 \strokec5 const\cf4 \strokec4  now = \cf5 \strokec5 new\cf4 \strokec4  \cf7 \strokec7 Date\cf4 \strokec4 ();\cb1 \
+\cb3           \cf5 \strokec5 const\cf4 \strokec4  publishDate = \cf5 \strokec5 new\cf4 \strokec4  \cf7 \strokec7 Date\cf4 \strokec4 (post.time);\cb1 \
+\cb3           \cf5 \strokec5 if\cf4 \strokec4  (publishDate <= now) \{\cb1 \
+\cb3             \cf2 \strokec2 //publish media object.\cf4 \cb1 \strokec4 \
+\cb3             \cf5 \strokec5 const\cf4 \strokec4  uuid = post.uuid;\cb1 \
+\cb3             \cf5 \strokec5 const\cf4 \strokec4  userRef = \cf5 \strokec5 await\cf4 \strokec4  db.collection(\cf6 \strokec6 "users"\cf4 \strokec4 ).doc(uuid).\cf5 \strokec5 get\cf4 \strokec4 ();\cb1 \
+\cb3             \cf5 \strokec5 const\cf4 \strokec4  user = userRef.data();\cb1 \
+\cb3             \cf5 \strokec5 const\cf4 \strokec4  longLiveToken = user.longLiveToken;\cb1 \
+\cb3             \cf5 \strokec5 const\cf4 \strokec4  instagramAcctId = post.instagramAcctId;\cb1 \
+\cb3             \cf5 \strokec5 const\cf4 \strokec4  medias = post.media;\cb1 \
+\
+\cb3             \cf5 \strokec5 for\cf4 \strokec4  (\cf5 \strokec5 let\cf4 \strokec4  i = \cf8 \strokec8 0\cf4 \strokec4 ; i < medias.length; i++) \{\cb1 \
+\cb3               \cf5 \strokec5 try\cf4 \strokec4  \{\cb1 \
+\cb3                 \cf5 \strokec5 const\cf4 \strokec4  mediaObjects = \cf5 \strokec5 await\cf4 \strokec4  createInstagramMedia(\cb1 \
+\cb3                   longLiveToken,\cb1 \
+\cb3                   instagramAcctId,\cb1 \
+\cb3                   post.caption,\cb1 \
+\cb3                   post.mediaType,\cb1 \
+\cb3                   medias[i],\cb1 \
+\cb3                 );\cb1 \
+\cb3                 \cf5 \strokec5 const\cf4 \strokec4  mediaObjectId = mediaObjects.id;\cb1 \
+\cb3                 \cf5 \strokec5 await\cf4 \strokec4  publishMedia(\cb1 \
+\cb3                   longLiveToken,\cb1 \
+\cb3                   instagramAcctId,\cb1 \
+\cb3                   mediaObjectId\cb1 \
+\cb3                 );\cb1 \
+\cb3               \} \cf5 \strokec5 catch\cf4 \strokec4  (error) \{\cb1 \
+\cb3                 console.log(error);\cb1 \
+\cb3                 \cf5 \strokec5 return\cf4 \strokec4 ;\cb1 \
+\cb3               \}\cb1 \
+\cb3             \}\cb1 \
+\cb3             \cf5 \strokec5 await\cf4 \strokec4  db\cb1 \
+\cb3               .collection(\cf6 \strokec6 "posts"\cf4 \strokec4 )\cb1 \
+\cb3               .doc(doc.id)\cb1 \
+\cb3               .update(\{ published: \cf5 \strokec5 true\cf4 \strokec4  \});\cb1 \
+\cb3           \}\cb1 \
+\cb3         \});\cb1 \
+\cb3       \})\cb1 \
+\cb3       .\cf5 \strokec5 catch\cf4 \strokec4 ((error) => \{\cb1 \
+\cb3         console.log(\cf6 \strokec6 "Error getting documents: "\cf4 \strokec4 , error);\cb1 \
+\cb3       \});\cb1 \
+\
+\cb3     \cf5 \strokec5 return\cf4 \strokec4  \cf5 \strokec5 null\cf4 \strokec4 ;\cb1 \
+\cb3   \});\cb1 \
+\
+\cb3 main.use(\cf6 \strokec6 "/v1"\cf4 \strokec4 , app);\cb1 \
+\cb3 main.use(bodyParser.json());\cb1 \
+\cb3 main.use(bodyParser.urlencoded(\{ extended: \cf5 \strokec5 true\cf4 \strokec4  \}));\cb1 \
+\
+\cb3 exports.api = functions.https.onRequest(main);\cb1 \
+\
+}
