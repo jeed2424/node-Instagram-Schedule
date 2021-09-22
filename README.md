@@ -8,4 +8,6 @@ This is my own implementation of Instagram Direct Publish (and more!) into Googl
 For security and confidentiallity purposes, the App Secret and App ID have been removed from the source code. The rest of the data is either generated using those previously mentionned or through the app directly.
 <br/>
 <br/>
-Known issues. At the moment, we cannot publish a video. We don't know why yet.
+# Known issues
+<br/>
+At the moment, we cannot publish a video. We don't know why yet.
